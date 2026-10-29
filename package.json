@@ -1,0 +1,25 @@
+{
+  "name": "expa-welcome-drafter",
+  "version": "1.0.0",
+  "description": "EXPA Welcome Drafter - Web Controller & Lead Dispatcher Dashboard for AIESEC in Indonesia",
+  "main": "web/server.js",
+  "scripts": {
+    "start": "node web/server.js",
+    "dev": "node web/server.js",
+    "build:flow": "node tools/build_langflow_export.js",
+    "test": "python tests/test_components.py",
+    "sim": "python tests/run_simulation.py"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [
+    "aiesec",
+    "expa",
+    "whatsapp",
+    "langflow",
+    "lead-dispatcher"
+  ],
+  "author": "AIESEC in Indonesia",
+  "license": "ISC"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "msg_demo_001",
+  "type": "composio.trigger.message",
+  "metadata": {
+    "trigger_slug": "GOOGLECALENDAR_EVENT_STARTING_SOON_TRIGGER",
+    "trigger_id": "ti_demo"
+  },
+  "data": {
+    "id": "evt-demo-001",
+    "summary": "EXPA-WELCOME-RUN",
+    "start": { "dateTime": "2026-10-27T09:00:00+07:00" }
+  }
+}

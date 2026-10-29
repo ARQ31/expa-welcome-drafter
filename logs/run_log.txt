@@ -1,0 +1,109 @@
+EXPA WELCOME DRAFTER: SIMULATED RUN LOG
+Real component code, stand-in Langflow API, stub LLM, mock data. Nothing was sent to anyone.
+
+====================================================================================================
+RUN: 1/8  First calendar trigger: 31 mock sign-ups, batch cap 15, flaky LLM
+     Dirty data: bad phones, injection attempt in a name, duplicates. LLM: every 7th call 429, every 11th adds a forbidden link.
+====================================================================================================
+[Run Gate]   OPEN   -> Open: run-20261029-140016-43b7
+[Sign-ups]   31 sign-ups  (halt=False)
+[Validate ] 25 valid, 6 rejected
+[Dedupe   ] 23 new, 2 dup, batch 15, deferred 8
+[Draft    ] 14 LLM, 1 fallback, 0 errors
+[Alert]      ok: 0 reason(s)
+             no alert needed
+
+>>> Same Composio delivery arrives again (retry / duplicate delivery)
+
+====================================================================================================
+RUN: 2/8  Replay of trigger evt-001
+====================================================================================================
+[Run Gate]   CLOSED -> reason: replay   (downstream components do not run)
+
+====================================================================================================
+RUN: 3/8  Next calendar instance: batch 2 (overlaps batch 1) + backlog from run 1
+     Overlapping sign-ups must be skipped; fixed rows from batch 1 are re-validated; deferred backlog is picked up.
+====================================================================================================
+[Run Gate]   OPEN   -> Open: run-20261029-140016-47a0
+[Sign-ups]   15 sign-ups  (halt=False)
+[Validate ] 14 valid, 1 rejected
+[Dedupe   ] 6 new, 6 dup, batch 15, deferred 1
+[Draft    ] 15 LLM, 0 fallback, 0 errors
+[Alert]      ok: 0 reason(s)
+             no alert needed
+
+====================================================================================================
+RUN: 4/8  LLM provider outage: batch 3 (12 new sign-ups)
+     Circuit breaker should stop hammering the LLM; templates take over; a human is alerted.
+====================================================================================================
+[Run Gate]   OPEN   -> Open: run-20261029-140016-e3de
+[Sign-ups]   12 sign-ups  (halt=False)
+[Validate ] 12 valid, 0 rejected
+[Dedupe   ] 12 new, 0 dup, batch 13, deferred 0
+[Draft    ] 0 LLM, 13 fallback, 0 errors
+[Alert]      warning: 1 reason(s)
+             ALERT (dry run, not sent) ->
+               | EXPA Welcome Drafter: run run-20261029-140016-e3de: WARNING
+               | received 12 | rejected 0 | new 12 | duplicates 0 | drafted 13 (LLM 0, fallback 13) | deferred 0
+               | Needs attention: LLM fallback rate 100% (threshold 30%)
+               | Details: events table, run_id=run-20261029-140016-e3de
+             calendar_task -> {'summary': 'Review EXPA drafts: warning (run-20261029-140016-e3de)', 'description': 'LLM fallback rate 100% (threshold 30%)'}
+
+====================================================================================================
+RUN: 5/8  Source file missing (a stage fails)
+     Failure in the middle of the flow still produces an alert.
+====================================================================================================
+[Run Gate]   OPEN   -> Open: run-20261029-140017-fda6
+[Sign-ups]   None  (halt=True)
+[Validate ] None   HALT: source: FileNotFoundError
+[Dedupe   ] None   HALT: source: FileNotFoundError
+[Draft    ] None   HALT: source: FileNotFoundError
+[Alert]      failed: 2 reason(s)
+             ALERT (dry run, not sent) ->
+               | EXPA Welcome Drafter: run run-20261029-140017-fda6: FAILED
+               | received 0 | rejected 0 | new 0 | duplicates 0 | drafted 0 (LLM 0, fallback 0) | deferred 0
+               | Needs attention: run halted at source: FileNotFoundError; 1 error event(s)
+               | Details: events table, run_id=run-20261029-140017-fda6
+             calendar_task -> {'summary': 'Review EXPA drafts: failed (run-20261029-140017-fda6)', 'description': 'run halted at source: FileNotFoundError; 1 error event(s)'}
+
+====================================================================================================
+RUN: 6/8  Someone's lunch event hits the trigger
+====================================================================================================
+[Run Gate]   CLOSED -> reason: title_mismatch   (downstream components do not run)
+
+====================================================================================================
+RUN: 7/8  Kill switch OFF (EXPA_RUN_ENABLED=false)
+====================================================================================================
+[Run Gate]   CLOSED -> reason: kill_switch_off   (downstream components do not run)
+
+====================================================================================================
+RUN: 8/8  Burst: second trigger 1 minute after a run (min 10 min between runs)
+====================================================================================================
+[Run Gate]   CLOSED -> reason: too_soon_after_previous_run   (downstream components do not run)
+
+====================================================================================================
+AUDIT (from the database after all runs)
+====================================================================================================
+contacts by status: draft_ready=43, rejected=4
+draft source:       LLM=29, fallback_template=14
+rejection reasons:  missing_expa_id=1, phone_has_letters=1, phone_not_mobile=1, suspicious_name=1
+runs:
+   run-20261029-140016-43b7  ok
+   run-20261029-140016-47a0  ok
+   run-20261029-140016-e3de  warning
+   run-20261029-140017-fda6  failed
+LLM warnings across all runs: llm_circuit_open=1, llm_error=9, llm_output_rejected=1, llm_rate_limit=2
+backoff sleeps requested (patched out in simulation): 8  e.g. [2.0, 2.0, 2.0, 4.0]
+sample drafts (names are mock; phone masked):
+   +6281****101     [LLM]  Halo Budi! Selamat bergabung di Global Volunteer bersama AIESEC in Bandung. Yuk lanjut ke langkah berikutnya di sini: https://example.org/aiesec-welcome
+   +6281****105     [LLM]  Hi Rizky! Welcome to Global Talent with AIESEC in Bandung. Your next step is here: https://example.org/aiesec-welcome
+   +6281****114     [fallback_template]  Halo! Terima kasih sudah mendaftar Global Volunteer di AIESEC in Bandung. Kami senang kamu bergabung. Langkah berikutnya: https://example.org/aiesec-welcome Ada pertanyaan? Balas pesan ini ya.
+   +6281****117     [LLM]  Halo Hana! Selamat bergabung di AIESEC bersama AIESEC in Solo. Yuk lanjut ke langkah berikutnya di sini: https://example.org/aiesec-welcome
+   +6281****301     [fallback_template]  Halo Zahra! Terima kasih sudah mendaftar Global Volunteer di AIESEC in Bandung. Kami senang kamu bergabung. Langkah berikutnya: https://example.org/aiesec-welcome Ada pertanyaan? Balas pesan ini ya.
+
+PRIVACY CHECKS
+  LLM inputs: 41 prompts, phone/email present: False   -> PASS
+  Audit log (events table): raw phone/email present: False   -> PASS
+  Alert texts (2): names/phones/emails present: False   -> PASS
+  Rejected rows holding a name/phone/draft: 0   -> PASS
+  Database file permissions: 0o666   -> PASS

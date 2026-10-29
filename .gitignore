@@ -1,0 +1,17 @@
+# Local runtime configuration & secrets
+.env
+data/frontend_config.json
+
+# SQLite runtime files & CSV exports
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/exports/
+
+# Python & Node artifacts
+__pycache__/
+*.pyc
+node_modules/
+
+# Local AI agent skills
+.agents/

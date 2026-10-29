@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXPA Welcome Drafter — AIESEC in Indonesia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="5" fill="#037EF3" />
+            <path d="M6.5 17L12 7L17.5 17H14.3L12 12.6L9.7 17H6.5Z" fill="white" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <span class="brand-app">EXPA Welcome Drafter</span>
+            <span class="brand-divider">/</span>
+            <span class="brand-org">AIESEC in Indonesia</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="system-status-pill" id="system-status-badge" title="Status koneksi pipeline">
+          <span class="status-indicator-dot" id="langflow-status-dot"></span>
+          <span class="status-label" id="langflow-status-label">Memeriksa sistem...</span>
+        </div>
+
+        <button class="btn btn-secondary" id="btn-open-settings" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          <span>Pengaturan</span>
+        </button>
+
+        <button class="btn btn-primary" id="btn-run-pipeline" type="button">
+          <svg class="icon-spin-target" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span id="btn-run-label">Sinkronisasi Pendaftar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-container">
+
+    <!-- Compact Page Intro + Export Actions -->
+    <section class="workspace-topbar">
+      <div class="workspace-title-block">
+        <h1 class="headline-title">Antrean Review &amp; Pengiriman WhatsApp</h1>
+        <p class="headline-description">
+          Tinjau draf pesan sambutan, kustomisasi template WhatsApp, perbaiki data pendaftar yang ditolak, dan kirim manual dengan aman.
+        </p>
+      </div>
+
+      <div class="workspace-actions">
+        <button class="btn btn-secondary" id="btn-open-template" type="button" title="Edit template pesan WhatsApp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Template Pesan</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btn-refresh-list" type="button" title="Muat ulang data dari database">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span>Segarkan</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btn-export-csv" type="button" title="Unduh rekap pendaftar ke file CSV">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Unduh CSV</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btn-sync-gdrive" type="button" title="Unggah salinan spreadsheet ke Google Drive">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+          </svg>
+          <span id="gdrive-btn-label">Backup Drive</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Interactive Metrics Grid (Click to filter) -->
+    <section class="metrics-grid" aria-label="Ringkasan Status Pendaftar">
+      <button type="button" class="metric-card active" data-status-card="draft_ready">
+        <div class="metric-header">
+          <span class="metric-label">Siap Dikirim</span>
+          <span class="metric-dot ready"></span>
+        </div>
+        <div class="metric-value text-primary" id="stat-ready">0</div>
+        <div class="metric-caption">Draf pesan siap ditinjau staf</div>
+      </button>
+
+      <button type="button" class="metric-card" data-status-card="rejected">
+        <div class="metric-header">
+          <span class="metric-label">Perlu Perbaikan</span>
+          <span class="metric-dot rejected"></span>
+        </div>
+        <div class="metric-value text-danger" id="stat-rejected">0</div>
+        <div class="metric-caption">Nomor / nama belum valid</div>
+      </button>
+
+      <button type="button" class="metric-card" data-status-card="contacted">
+        <div class="metric-header">
+          <span class="metric-label">Sudah Dihubungi</span>
+          <span class="metric-dot contacted"></span>
+        </div>
+        <div class="metric-value text-success" id="stat-contacted">0</div>
+        <div class="metric-caption">Selesai dikirim via WhatsApp</div>
+      </button>
+
+      <button type="button" class="metric-card" data-status-card="all">
+        <div class="metric-header">
+          <span class="metric-label">Total Pendaftar</span>
+          <span class="metric-dot total"></span>
+        </div>
+        <div class="metric-value" id="stat-total">0</div>
+        <div class="metric-caption" id="stat-prog-breakdown">Semua data di sistem</div>
+      </button>
+    </section>
+
+    <!-- Control Bar: Tabs + Search + Program Filter + Layout Toggle -->
+    <section class="control-panel">
+      <div class="control-row-tabs">
+        <div class="segmented-control" role="tablist" aria-label="Filter Status">
+          <button type="button" class="seg-btn active" data-status="draft_ready" role="tab" aria-selected="true">
+            <span>Siap Kirim</span>
+            <span class="tab-badge" id="tab-cnt-ready">0</span>
+          </button>
+          <button type="button" class="seg-btn" data-status="rejected" role="tab" aria-selected="false">
+            <span>Perlu Perbaikan</span>
+            <span class="tab-badge" id="tab-cnt-rejected">0</span>
+          </button>
+          <button type="button" class="seg-btn" data-status="contacted" role="tab" aria-selected="false">
+            <span>Sudah Dihubungi</span>
+            <span class="tab-badge" id="tab-cnt-contacted">0</span>
+          </button>
+          <button type="button" class="seg-btn" data-status="all" role="tab" aria-selected="false">
+            <span>Semua Data</span>
+            <span class="tab-badge" id="tab-cnt-all">0</span>
+          </button>
+        </div>
+
+        <div class="control-meta-right">
+          <span class="count-tag" id="rendered-count">0 pendaftar</span>
+          <div class="view-toggle-group" role="group" aria-label="Mode tampilan">
+            <button type="button" class="view-toggle-btn active" id="btn-view-grid" title="Tampilan Kartu (Grid)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button type="button" class="view-toggle-btn" id="btn-view-list" title="Tampilan Baris (Kompak)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-row-filters">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" placeholder="Cari nama pendaftar, EXPA ID, nomor WhatsApp, atau LC (tekan / untuk fokus)..."
+            autocomplete="off">
+          <button type="button" class="search-clear-btn" id="btn-clear-search" hidden aria-label="Bersihkan pencarian">&times;</button>
+        </div>
+
+        <div class="dropdown-filter-wrapper">
+          <select id="program-select" aria-label="Filter Program">
+            <option value="all">Semua Program</option>
+            <option value="GV">Global Volunteer (GV)</option>
+            <option value="GTa">Global Talent (GTa)</option>
+            <option value="GTe">Global Teacher (GTe)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacts Queue Container -->
+    <section class="queue-section">
+      <div class="leads-grid" id="leads-container">
+        <div class="empty-state-card">
+          <p class="empty-state-text">Memuat antrean pendaftar...</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Template Message Modal Dialog -->
+  <div class="modal-backdrop" id="template-modal" aria-hidden="true">
+    <div class="modal-card modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="template-modal-title">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-eyebrow">Kustomisasi Pesan Sambutan</span>
+          <h3 class="modal-title" id="template-modal-title">Template Pesan WhatsApp</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-template" aria-label="Tutup Template">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="template-form" class="modal-form">
+        <div class="form-group">
+          <div class="template-label-row">
+            <label for="cfg-message-template">Format Template Pesan</label>
+            <button type="button" class="btn-ghost-xs" id="btn-reset-template">Reset ke Default</button>
+          </div>
+
+          <div class="template-vars-bar">
+            <span class="vars-hint">Klik variabel untuk menyisipkan:</span>
+            <button type="button" class="var-chip" data-var="{full_name}">{full_name}</button>
+            <button type="button" class="var-chip" data-var="{first_name}">{first_name}</button>
+            <button type="button" class="var-chip" data-var="{programme}">{programme}</button>
+            <button type="button" class="var-chip" data-var="{programme_full}">{programme_full}</button>
+            <button type="button" class="var-chip" data-var="{lc}">{lc}</button>
+            <button type="button" class="var-chip" data-var="{cta_link}">{cta_link}</button>
+          </div>
+
+          <textarea id="cfg-message-template" class="form-textarea" rows="4" required
+            placeholder="Halo {full_name}! Terima kasih sudah mendaftar {programme} di AIESEC in {lc}..."></textarea>
+        </div>
+
+        <div class="template-preview-box">
+          <div class="template-preview-header">
+            <span class="preview-title">Pratinjau Hasil (Contoh: Budi Santoso &middot; GV &middot; Bandung)</span>
+            <span class="draft-word-count" id="template-preview-words">0 kata</span>
+          </div>
+          <p class="template-preview-text" id="template-preview-text"></p>
+        </div>
+
+        <label class="checkbox-row" for="cfg-apply-template-all">
+          <input type="checkbox" id="cfg-apply-template-all" checked>
+          <span>Terapkan langsung template baru ini ke seluruh pendaftar di antrean <strong>Siap Kirim</strong></span>
+        </label>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-template">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan &amp; Terapkan Template</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal Dialog -->
+  <div class="modal-backdrop" id="settings-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-eyebrow">Konfigurasi Sistem</span>
+          <h3 class="modal-title" id="settings-modal-title">Pengaturan Integrasi</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-settings" aria-label="Tutup Pengaturan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="settings-form" class="modal-form">
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="cfg-langflow-host">Langflow Host Server</label>
+            <input type="url" id="cfg-langflow-host" class="form-input" placeholder="http://localhost:7860" required>
+            <span class="form-hint">Endpoint server Langflow lokal/remote.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="cfg-flow-id">Flow ID / URL Flow</label>
+            <input type="text" id="cfg-flow-id" class="form-input" placeholder="83ac3a5b-084b-4b02-a191-f5f89083b642" required>
+            <span class="form-hint">UUID flow atau URL halaman flow Langflow.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cfg-langflow-apikey">Langflow API Key (Opsional untuk Webhook Auth)</label>
+          <input type="password" id="cfg-langflow-apikey" class="form-input" placeholder="sk-...">
+          <span class="form-hint">Diperlukan jika <em>Webhook Authentication</em> aktif di Langflow (Settings &rarr; Langflow API Keys).</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cfg-cta-link">Call-To-Action (CTA) Link Pendaftaran</label>
+          <input type="url" id="cfg-cta-link" class="form-input" placeholder="https://aiesec.or.id/welcome">
+          <span class="form-hint">Tautan resmi langkah selanjutnya yang disertakan dalam draf pesan.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cfg-gdrive-url">Google Drive Webhook URL</label>
+          <input type="url" id="cfg-gdrive-url" class="form-input"
+            placeholder="https://script.google.com/macros/s/.../exec">
+          <span class="form-hint">Web App URL Google Apps Script dari <code>tools/google_drive_uploader.js</code>.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cfg-gdrive-secret">Google Drive Webhook Secret</label>
+          <input type="password" id="cfg-gdrive-secret" class="form-input"
+            placeholder="expa-sec-token-2026">
+          <span class="form-hint">Token rahasia (<code>SHARED_SECRET</code>) untuk autentikasi upload ke Google Drive.</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-settings">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Lead Modal Dialog -->
+  <div class="modal-backdrop" id="edit-lead-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-lead-title">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-eyebrow">Koreksi Data Pendaftar</span>
+          <h3 class="modal-title" id="edit-lead-title">Perbaiki Data Pendaftar</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-edit-lead" aria-label="Tutup Koreksi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="edit-lead-form" class="modal-form">
+        <input type="hidden" id="edit-contact-key">
+
+        <div class="form-group">
+          <label for="edit-full-name">Nama Lengkap</label>
+          <input type="text" id="edit-full-name" class="form-input" placeholder="Masukkan nama lengkap pendaftar" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-phone">Nomor Telepon / WhatsApp</label>
+          <input type="text" id="edit-phone" class="form-input" placeholder="Contoh: 081234567890 atau +6281234567890" required>
+          <span class="form-hint">Harus nomor seluler aktif (awalan 08, 628, atau +628).</span>
+        </div>
+
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="edit-programme">Program AIESEC</label>
+            <select id="edit-programme" class="form-input">
+              <option value="GV">Global Volunteer (GV)</option>
+              <option value="GTa">Global Talent (GTa)</option>
+              <option value="GTe">Global Teacher (GTe)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-lc">Komite Lokal (LC)</label>
+            <input type="text" id="edit-lc" class="form-input" placeholder="Contoh: Bandung, Jakarta">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-edit-lead">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-edit-lead">Simpan &amp; Validasi Ulang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
