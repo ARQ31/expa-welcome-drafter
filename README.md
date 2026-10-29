@@ -45,25 +45,25 @@ From the Web Dashboard you can:
 - Trigger the Langflow flow remotely (**Jalankan Flow**) with automatic API key provisioning and local fallback if Langflow is offline.
 - Export validated CSV spreadsheets locally or upload directly to Google Drive (**Unduh CSV**).
 
-## Panduan Demo Lengkap (Web Dashboard + Langflow)
+## Complete Demo Guide (Web Dashboard + Langflow)
 
-1. **Jalankan Langflow & Import Flow**:
-   - Pastikan Langflow berjalan di `http://127.0.0.1:7860`.
-   - Klik **New Flow → Import** dan pilih `langflow/expa-welcome-drafter.json` (9 node, 8 koneksi otomatis).
-2. **Jalankan Web Dispatcher Dashboard**:
-   - Jalankan `npm start` lalu buka `http://localhost:3000`.
-   - Indikator di pojok kanan atas akan berwarna **Hijau (`Terhubung (http://127.0.0.1:7860)`)**. Jika Flow ID berbeda, klik ikon **Pengaturan (⚙️)** dan tempel URL atau UUID Flow Langflow Anda.
-3. **Demo 1 — Kustomisasi Template Pesan WhatsApp**:
-   - Klik tombol **Template Pesan** di bilah atas dashboard.
-   - Tambahkan atau ubah susunan teks menggunakan chip variabel (`{full_name}`, `{first_name}`, `{programme}`, `{programme_full}`, `{lc}`, `{cta_link}`), perhatikan **Pratinjau Hasil Pesan (Live Preview)** di bawahnya.
-   - Centang *"Terapkan ulang template ini ke seluruh draf berstatus Siap Kirim"* lalu klik **Simpan & Terapkan Template**. Seluruh kartu pendaftar langsung diperbarui secara *real-time*.
-4. **Demo 2 — Validasi Ketat & Perbaikan Data Pendaftar (`Perlu Perbaikan`)**:
-   - Buka tab **Perlu Perbaikan** untuk melihat pendaftar yang ditolak otomatis oleh validator (nama kosong `#1014`, program tidak valid `#1017`, nomor telepon terlalu pendek `#1010`, nomor telepon kabel `#1013`, injeksi prompt `#1015`, dan nomor telepon duplikat `#1019`).
-   - Klik **Perbaiki Data Pendaftar** pada salah satu kartu (misal `#1014`), isi nama lengkap yang valid, lalu klik **Simpan & Validasi Ulang**. Data langsung berpindah ke tab **Siap Kirim** lengkap dengan draf pesan otomatis.
-5. **Demo 3 — Eksekusi Flow Langflow & Ekspor CSV / Google Drive**:
-   - Klik **Jalankan Flow**: dashboard menembak langsung `/api/v1/run/<FLOW_ID>` di Langflow (toast menampilkan badge hijau **`⚡ LANGFLOW LIVE`**).
-   - Klik **Unduh CSV**: komponen `ExportSpreadsheetTool` di Langflow mengekspor seluruh pendaftar `draft_ready` yang valid ke file CSV (`expa_drafts_draft_ready_*.csv`) dan mengunggah salinannya ke Google Drive (jika Webhook URL Apps Script diisi di Pengaturan).
-   - Klik **Buka WhatsApp** pada kartu pendaftar untuk membuka ruang obrolan `wa.me` dengan draf pesan yang sudah terisi otomatis, lalu klik **Tandai Dihubungi**.
+1. **Start Langflow & Import the Flow**:
+   - Ensure Langflow is running at `http://127.0.0.1:7860`.
+   - Click **New Flow → Import** and select `langflow/expa-welcome-drafter.json` (9 nodes, 8 pre-wired edges).
+2. **Start the Web Dispatcher Dashboard**:
+   - Run `npm start` and open `http://localhost:3000`.
+   - The status indicator at the top right will turn **Green (`Terhubung (http://127.0.0.1:7860)`)**. If your Flow ID differs, click the **Settings (`⚙️`)** icon and paste your Langflow Flow URL or UUID.
+3. **Demo 1 — Customizing the WhatsApp Message Template**:
+   - Click the **Template Pesan** button in the dashboard top bar.
+   - Edit the template text or insert dynamic variable chips (`{full_name}`, `{first_name}`, `{programme}`, `{programme_full}`, `{lc}`, `{cta_link}`), and check the real-time **Live Preview** and word counter below.
+   - Check *"Terapkan ulang template ini ke seluruh draf berstatus Siap Kirim"* and click **Simpan & Terapkan Template**. All ready applicant cards update immediately in real time.
+4. **Demo 2 — Strict Validation & Fixing Rejected Leads (`Perlu Perbaikan`)**:
+   - Open the **Perlu Perbaikan** tab to inspect sign-ups automatically rejected by the validator (missing name `#1014`, unrecognized programme `#1017`, short phone `#1010`, landline number `#1013`, prompt injection `#1015`, and duplicate phone `#1019`).
+   - Click **Perbaiki Data Pendaftar** on any rejected card (e.g., `#1014`), enter a valid full name, and click **Simpan & Validasi Ulang**. The record is re-validated, moves to **Siap Kirim**, and gets a freshly rendered WhatsApp draft.
+5. **Demo 3 — Live Langflow Execution & CSV / Google Drive Export**:
+   - Click **Jalankan Flow**: the dashboard calls `/api/v1/run/<FLOW_ID>` directly on Langflow (the notification toast displays a green **`⚡ LANGFLOW LIVE`** badge).
+   - Click **Unduh CSV**: the `ExportSpreadsheetTool` component in Langflow exports all valid `draft_ready` records to a clean CSV (`expa_drafts_draft_ready_*.csv`) and uploads a backup copy to Google Drive (when the Apps Script Webhook URL is configured in Settings).
+   - Click **Buka WhatsApp** on any applicant card to open `wa.me` with the pre-filled message, then click **Tandai Dihubungi** to mark the lead as contacted.
 
 ## Build it in Langflow
 
