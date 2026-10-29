@@ -619,6 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Terjadi kesalahan saat mengekspor data', 'error');
     } finally {
       btnExportCsv.disabled = false;
+      fetchStats();
+      fetchContacts();
     }
   });
 
@@ -649,6 +651,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       btnSyncGdrive.disabled = false;
       gdriveBtnLabel.textContent = 'Backup Drive';
+      fetchStats();
+      fetchContacts();
     }
   });
 
@@ -656,6 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
   segButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       syncStatusFilterUI(btn.getAttribute('data-status'));
+      fetchStats();
       fetchContacts();
     });
   });
@@ -663,6 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
   metricCards.forEach(card => {
     card.addEventListener('click', () => {
       syncStatusFilterUI(card.getAttribute('data-status-card'));
+      fetchStats();
       fetchContacts();
     });
   });
@@ -826,6 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'success'
           );
           closeTemplateModal();
+          await fetchStats();
           await fetchContacts();
         } else {
           showToast('Gagal menyimpan template pesan', 'error');

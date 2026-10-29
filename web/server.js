@@ -508,6 +508,9 @@ function cleanAndSyncMockData(db) {
     });
 
     db.exec(`
+      DELETE FROM contacts
+      WHERE contact_key LIKE 'x:%' AND contact_key != 'x:missing_id';
+
       UPDATE contacts
       SET draft_source = 'template'
       WHERE status IN ('draft_ready', 'contacted') AND draft_source IN ('validator', 'ai_drafter');
@@ -1006,6 +1009,9 @@ const server = http.createServer(async (req, res) => {
           }
         } catch (_) {}
 
+        // Re-apply validation rules after Langflow touched the DB so stats, cards and CSV stay in sync
+        cleanAndSyncMockData(db);
+
         const rows = db.prepare(`
           SELECT 
             contact_key, expa_id, COALESCE(full_name, first_name) AS full_name,
@@ -1170,6 +1176,7 @@ const server = http.createServer(async (req, res) => {
           if (applyToAll && mergedCfg.message_template) {
             const db = getDb();
             if (db) {
+              cleanAndSyncMockData(db);
               const readyRows = db.prepare("SELECT contact_key, first_name, full_name, programme, lc FROM contacts WHERE status = 'draft_ready'").all();
               const upd = db.prepare("UPDATE contacts SET draft_text = ?, draft_source = 'template', updated_at = datetime('now') WHERE contact_key = ?");
               for (const r of readyRows) {
