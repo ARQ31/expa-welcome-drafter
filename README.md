@@ -65,7 +65,7 @@ From the Web Dashboard you can:
    - Click **Unduh CSV**: the `ExportSpreadsheetTool` component in Langflow exports all valid `draft_ready` records to a clean CSV (`expa_drafts_draft_ready_*.csv`) and uploads a backup copy to Google Drive (when the Apps Script Webhook URL is configured in Settings).
    - Click **Buka WhatsApp** on any applicant card to open `wa.me` with the pre-filled message, then click **Tandai Dihubungi** to mark the lead as contacted.
 
-## For Demo Video Check through this link [https://drive.google.com/drive/folders/1V38hptm-5cjyIVNQ8ZLgknnv6FpyvwUx]
+## For Demo Video Check through this link [https://drive.google.com/drive/folders/1V38hptm-5cjyIVNQ8ZLgknnv6FpyvwUx](https://drive.google.com/drive/folders/1vqCe6dXMP5nXHVT28IM9J4WtX9VMY_gu?usp=sharing)]
 
 ## Build it in Langflow
 
@@ -107,13 +107,6 @@ From the Web Dashboard you can:
 4. Disconnect the model component: drafts use the template. Set a wrong API key: retries, then fallback, then an alert (turn *Dry run* off and set Telegram to see a real message).
 5. Set `EXPA_RUN_ENABLED=false`: the Gate closes.
 6. Before production: turn *Allow manual run* **off**, *Dry run* **off**.
-
-## 60-second demo video script
-1. Show the calendar event and the flow canvas (10s).
-2. Fire the webhook with curl. Show drafts and the `review_queue` export (15s).
-3. Fire it again: `replay`. Run batch 2: duplicates skipped (10s).
-4. Break the API key (or switch the model off). Show the Telegram/Slack alert, then point out it contains no names or numbers (15s).
-5. Flip the kill switch (10s).
 
 ## Design decisions in one place
 - **Drafts, not sends.** WhatsApp bulk-sending needs approved templates and carries account-ban risk. A human gate is the safe default, and it directly prevents the "wrong message to hundreds" incident.
