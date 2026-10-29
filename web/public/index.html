@@ -335,7 +335,13 @@
 
         <div class="form-group">
           <label for="cfg-langflow-apikey">Langflow API Key (Opsional untuk Webhook Auth)</label>
-          <input type="password" id="cfg-langflow-apikey" class="form-input" placeholder="sk-...">
+          <div class="input-password-wrapper">
+            <input type="password" id="cfg-langflow-apikey" class="form-input" placeholder="sk-..." autocomplete="off">
+            <button type="button" class="btn-toggle-mask" title="Tampilkan / Sembunyikan API Key" aria-label="Tampilkan atau sembunyikan API Key">
+              <svg class="eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
           <span class="form-hint">Diperlukan jika <em>Webhook Authentication</em> aktif di Langflow (Settings &rarr; Langflow API Keys).</span>
         </div>
 
@@ -347,15 +353,34 @@
 
         <div class="form-group">
           <label for="cfg-gdrive-url">Google Drive Webhook URL</label>
-          <input type="url" id="cfg-gdrive-url" class="form-input"
-            placeholder="https://script.google.com/macros/s/.../exec">
+          <div class="input-password-wrapper">
+            <input type="password" id="cfg-gdrive-url" class="form-input"
+              placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn-toggle-mask" id="btn-toggle-gdrive-url" title="Tampilkan / Sembunyikan URL" aria-label="Tampilkan atau sembunyikan URL">
+              <svg class="eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
           <span class="form-hint">Web App URL Google Apps Script dari <code>tools/google_drive_uploader.js</code>.</span>
         </div>
 
+        
         <div class="form-group">
+          <label for="cfg-gdrive-folder">Google Drive Folder ID / URL (Opsional)</label>
+          <input type="text" id="cfg-gdrive-folder" class="form-input"
+            placeholder="misal: 1ABC... atau link folder Google Drive">
+          <span class="form-hint">ID atau link URL folder tujuan di Google Drive. Kosongkan untuk simpan di My Drive utama.</span>
+        </div>
+<div class="form-group">
           <label for="cfg-gdrive-secret">Google Drive Webhook Secret</label>
-          <input type="password" id="cfg-gdrive-secret" class="form-input"
-            placeholder="expa-sec-token-2026">
+          <div class="input-password-wrapper">
+            <input type="password" id="cfg-gdrive-secret" class="form-input"
+              placeholder="expa-sec-token-2026" autocomplete="off">
+            <button type="button" class="btn-toggle-mask" title="Tampilkan / Sembunyikan Secret" aria-label="Tampilkan atau sembunyikan Secret">
+              <svg class="eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
           <span class="form-hint">Token rahasia (<code>SHARED_SECRET</code>) untuk autentikasi upload ke Google Drive.</span>
         </div>
 

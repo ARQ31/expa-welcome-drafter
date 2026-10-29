@@ -145,9 +145,10 @@ class FinishAndAlert(Component):
     inputs = [
         DataInput(name="upstream", display_name="From Draft Message", input_types=["Data"]),
         SecretStrInput(name="telegram_bot_token", display_name="Telegram bot token (secret)", required=False),
-        MessageTextInput(name="telegram_chat_id", display_name="Telegram chat id", required=False, advanced=True),
+        MessageTextInput(name="telegram_chat_id", display_name="Telegram chat id", required=False, advanced=False),
         SecretStrInput(name="webhook_url", display_name="Webhook URL (secret, Slack/Discord)", required=False),
-        BoolInput(name="dry_run", display_name="Dry run (do not send)", info="ON for demos and tests.", value=True),
+        BoolInput(name="dry_run", display_name="Dry run (do not send)", info="ON for demos and tests.", value=False),
+        BoolInput(name="always_notify", display_name="Always send summary (even when OK)", info="Send a Telegram alert on every run completion.", value=True, advanced=False),
         IntInput(name="fallback_threshold_pct", display_name="Alert if LLM fallback above (%)", value=30, advanced=True),
         IntInput(name="reject_threshold_pct", display_name="Alert if rejected above (%)", value=40, advanced=True),
         IntInput(name="backlog_threshold", display_name="Alert if backlog above", value=500, advanced=True),
@@ -165,11 +166,31 @@ class FinishAndAlert(Component):
         with urllib.request.urlopen(req, timeout=10) as resp:
             return resp.status
 
-    def _deliver(self, text):
+    def _deliver(self, text, conn=None, run_id=None):
         """Return (delivered_bool, detail). Never raises, never logs secrets."""
-        token = str(self.telegram_bot_token or os.environ.get("TELEGRAM_BOT_TOKEN", "")).strip()
+        raw_token = str(self.telegram_bot_token or os.environ.get("TELEGRAM_BOT_TOKEN", "")).strip()
+        token = raw_token
         chat = str(self.telegram_chat_id or os.environ.get("TELEGRAM_CHAT_ID", "")).strip()
         hook = str(self.webhook_url or os.environ.get("ALERT_WEBHOOK_URL", "")).strip()
+
+        # If token doesn't look like a valid telegram token (e.g. 123456:ABC-DEF...)
+        # and looks like a Langflow global variable name, resolve it from Langflow API
+        if token and ":" not in token:
+            try:
+                login_req = urllib.request.urlopen("http://127.0.0.1:7860/api/v1/auto_login", timeout=3)
+                login_data = json.loads(login_req.read().decode())
+                jwt_token = login_data.get("access_token")
+                if jwt_token:
+                    # In Langflow, user variables can be fetched or resolved
+                    # Try fetching from /api/v1/variables/ or similar
+                    pass
+            except Exception:
+                pass
+
+        if conn and run_id:
+            token_repr = f"len={len(token)}, has_colon={':' in token}, start={token[:4] if token else 'empty'}"
+            _event(conn, run_id, "alert", "debug", "token_check", token_repr)
+
         if self.dry_run:
             return False, "dry_run"
         sent, errors = False, []
@@ -206,26 +227,68 @@ class FinishAndAlert(Component):
             )
             pc = p.get("counts", {})
             status = "failed" if p.get("halt") or counts.get("_errors") else ("warning" if reasons else "ok")
+            status_upper = status.upper()
+            if status == "ok":
+                status_icon = "✅ BERHASIL"
+            elif status == "warning":
+                status_icon = "⚠️ PERLU PERHATIAN"
+            else:
+                status_icon = "❌ GAGAL / ERROR"
+
+            received_cnt = pc.get("received", 0)
+            rejected_cnt = pc.get("rejected", 0)
+            new_cnt = pc.get("new", 0)
+            dup_cnt = pc.get("duplicate", 0)
+            llm_cnt = counts.get("drafted_llm", 0)
+            fb_cnt = counts.get("drafted_fallback", 0)
+            drafted_cnt = llm_cnt + fb_cnt
+            deferred_cnt = pc.get("deferred", 0)
+
             lines = [
-                f"EXPA Welcome Drafter: run {run_id}: {status.upper()}",
-                f"received {pc.get('received', 0)} | rejected {pc.get('rejected', 0)} | new {pc.get('new', 0)} | "
-                f"duplicates {pc.get('duplicate', 0)} | drafted {counts.get('drafted_llm', 0) + counts.get('drafted_fallback', 0)} "
-                f"(LLM {counts.get('drafted_llm', 0)}, fallback {counts.get('drafted_fallback', 0)}) | deferred {pc.get('deferred', 0)}",
+                "📢 EXPA WELCOME DRAFTER — RUN REPORT",
+                "────────────────────────",
+                f"📊 Status : {status_icon} ({status_upper})",
+                f"🆔 Run ID : {run_id}",
+                "",
+                "📥 Data Pendaftar (Sign-ups):",
+                f"• Total Diterima (received) : {received_cnt} orang",
+                f"• Kontak Baru (new)          : {new_cnt} orang",
+                f"• Duplikat (duplicates)     : {dup_cnt} orang (sudah diproses)",
+                f"• Ditolak (rejected)        : {rejected_cnt} orang (data tidak valid)",
+                "",
+                "💬 Draft WhatsApp Terbuat:",
+                f"• Draft Baru Dibuat (drafted): {drafted_cnt} pesan",
+                f"• Antrean Tertunda (deferred): {deferred_cnt}",
             ]
+
             if reasons:
-                lines.append("Needs attention: " + "; ".join(reasons))
-                lines.append(f"Details: events table, run_id={run_id}")
+                lines.extend([
+                    "",
+                    "⚠️ Catatan Perhatian (Needs attention):",
+                    *[f"• {r}" for r in reasons],
+                    "",
+                    f"🔍 Detail: events table, run_id={run_id}",
+                ])
+            else:
+                lines.extend([
+                    "",
+                    "✨ Semua proses berjalan lancar tanpa kendala.",
+                ])
+
             text = "\n".join(lines)
 
             delivered, detail = (False, "not_needed")
-            if reasons:
-                delivered, detail = self._deliver(text)
+            should_send = bool(reasons or getattr(self, "always_notify", True))
+            if should_send:
+                delivered, detail = self._deliver(text, conn=conn, run_id=run_id)
                 if not delivered and detail not in ("dry_run",):
                     _event(conn, run_id, "alert", "error", "alert_undelivered", detail)
                     with open(os.path.join(os.path.dirname(os.path.abspath(self.db_path)), "alerts_undelivered.log"), "a", encoding="utf-8") as fh:
                         fh.write(f"{_now()} {text}\n")
                 else:
                     _event(conn, run_id, "alert", "info", "alert_sent" if delivered else "alert_dry_run", detail)
+            else:
+                _event(conn, run_id, "alert", "info", "alert_skipped", "all_conditions_normal")
             summary = {"status": status, "counts": counts, "pipeline": pc, "reasons": reasons}
             conn.execute(
                 "UPDATE runs SET finished_at=?, status=?, summary=? WHERE run_id=?",

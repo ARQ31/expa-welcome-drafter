@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cfgFlowId = document.getElementById('cfg-flow-id');
   const cfgLangflowApiKey = document.getElementById('cfg-langflow-apikey');
   const cfgGdriveUrl = document.getElementById('cfg-gdrive-url');
+  const cfgGdriveFolder = document.getElementById('cfg-gdrive-folder');
   const cfgGdriveSecret = document.getElementById('cfg-gdrive-secret');
   const cfgCtaLink = document.getElementById('cfg-cta-link');
 
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const editLeadTitle = document.getElementById('edit-lead-title');
 
   // --- 1. Notification Toast Helper ---
-  function showToast(message, type = 'info') {
+  function showToast(message, type = 'info', action = null) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast-item ${type}`;
@@ -105,12 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
       svgIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#037EF3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
     }
 
-    toast.innerHTML = `${svgIcon}<span>${escapeHtml(message)}</span>`;
+    let actionHtml = '';
+    if (action && action.url) {
+      actionHtml = `
+        <a href="${escapeHtml(action.url)}" target="_blank" rel="noopener noreferrer" class="toast-action-btn">
+          ${escapeHtml(action.label || 'Buka Link ↗')}
+        </a>
+      `;
+    }
+
+    toast.innerHTML = `${svgIcon}<span>${escapeHtml(message)}</span>${actionHtml}`;
     container.appendChild(toast);
 
+    const duration = action ? 12000 : 3500;
     setTimeout(() => {
       toast.remove();
-    }, 3200);
+    }, duration);
   }
 
   // --- 2. System Status & Health Check ---
@@ -626,6 +637,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 7. Google Drive Direct Backup ---
   btnSyncGdrive.addEventListener('click', async () => {
+    // Buka tab baru secara sinkron saat klik agar tidak diblokir oleh popup blocker browser
+    let newTab = null;
+    try {
+      newTab = window.open('about:blank', '_blank');
+      if (newTab) {
+        newTab.document.write('<title>Mengunggah ke Google Drive...</title><body style="font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:80vh;color:#4b5563;text-align:center;"><div><p style="font-size:16px;font-weight:600;color:#1f2937;">Menyiapkan Spreadsheet & Mengunggah ke Google Drive...</p><p style="font-size:13px;color:#6b7280;">Tab ini akan otomatis beralih ke file Google Drive setelah selesai.</p></div></body>');
+      }
+    } catch (_) {}
+
     btnSyncGdrive.disabled = true;
     gdriveBtnLabel.textContent = 'Mengunggah...';
 
@@ -638,15 +658,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (data.gdrive && data.gdrive.uploaded) {
-        showToast(data.gdrive.message || 'Berhasil diunggah ke Google Drive!', 'success');
-        if (data.gdrive.file_url) {
-          window.open(data.gdrive.file_url, '_blank');
+        const driveUrl = data.gdrive.file_url || '';
+        showToast(
+          'Berhasil diunggah ke Google Drive!',
+          'success',
+          driveUrl ? { label: 'Buka File Drive ↗', url: driveUrl } : null
+        );
+        if (newTab && driveUrl) {
+          newTab.location.href = driveUrl;
+        } else if (newTab) {
+          newTab.close();
         }
       } else {
+        if (newTab) newTab.close();
         const msg = data.gdrive?.message || 'Google Drive belum dikonfigurasi';
         showToast(msg, 'error');
       }
     } catch (err) {
+      if (newTab) newTab.close();
       showToast('Gagal mengunggah file ke Google Drive', 'error');
     } finally {
       btnSyncGdrive.disabled = false;
@@ -852,6 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cfgFlowId.value = cfg.flow_id || '';
       if (cfgLangflowApiKey) cfgLangflowApiKey.value = cfg.langflow_api_key || '';
       cfgGdriveUrl.value = cfg.gdrive_webhook_url || '';
+      if (cfgGdriveFolder) cfgGdriveFolder.value = cfg.gdrive_folder_id || '';
       if (cfgGdriveSecret) cfgGdriveSecret.value = cfg.gdrive_webhook_secret || '';
       cfgCtaLink.value = cfg.cta_link || '';
       cachedCtaLink = cfg.cta_link || 'https://aiesec.or.id/welcome';
@@ -887,6 +917,7 @@ document.addEventListener('DOMContentLoaded', () => {
       flow_id: cfgFlowId.value.trim(),
       langflow_api_key: cfgLangflowApiKey ? cfgLangflowApiKey.value.trim() : undefined,
       gdrive_webhook_url: cfgGdriveUrl.value.trim(),
+      gdrive_folder_id: cfgGdriveFolder ? cfgGdriveFolder.value.trim() : '',
       gdrive_webhook_secret: cfgGdriveSecret ? cfgGdriveSecret.value.trim() : undefined,
       cta_link: cfgCtaLink.value.trim()
     };
@@ -907,6 +938,24 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       showToast('Terjadi kesalahan saat menyimpan pengaturan', 'error');
     }
+  });
+
+  // Toggle mask / unmask password & secret inputs
+  document.querySelectorAll('.btn-toggle-mask').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wrapper = btn.closest('.input-password-wrapper');
+      if (!wrapper) return;
+      const input = wrapper.querySelector('input');
+      if (!input) return;
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      const eyeOpen = btn.querySelector('.eye-open');
+      const eyeClosed = btn.querySelector('.eye-closed');
+      if (eyeOpen && eyeClosed) {
+        eyeOpen.style.display = isPass ? 'none' : 'inline-block';
+        eyeClosed.style.display = isPass ? 'inline-block' : 'none';
+      }
+    });
   });
 
   // Helper Escape HTML

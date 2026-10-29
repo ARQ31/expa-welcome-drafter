@@ -121,9 +121,15 @@ class ExpaSignupsMock(Component):
         file_path = self.file_path
         if not os.path.exists(file_path):
             base = os.environ.get("EXPA_WORKSPACE_DIR") or os.path.dirname(os.path.dirname(os.path.abspath(self.db_path)))
-            alt = os.path.join(base, file_path.lstrip("./\\"))
-            if os.path.exists(alt):
-                file_path = alt
+            candidates = [
+                os.path.join(base, file_path.lstrip("./\\")),
+                os.path.join(r"C:\Users\ariqm\Downloads\Application IID\expa-welcome-drafter", file_path.lstrip("./\\")),
+                os.path.join(r"C:\Users\ariqm\Downloads\Application IID\expa-welcome-drafter", "data", os.path.basename(file_path)),
+            ]
+            for cand in candidates:
+                if os.path.exists(cand):
+                    file_path = cand
+                    break
         conn = _connect(self.db_path)
         try:
             with open(file_path, encoding="utf-8") as fh:

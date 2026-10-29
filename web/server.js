@@ -34,6 +34,7 @@ const DEFAULT_CONFIG = {
   message_template: "Halo {full_name}! Terima kasih sudah mendaftar {programme} di AIESEC in {lc}. Kami senang menyambutmu untuk langkah kepemimpinan berikutnya. Informasi lengkap dan langkah selanjutnya bisa kamu akses di {cta_link}. Ada pertanyaan yang ingin kamu tanyakan ke tim kami?",
   gdrive_webhook_url: "",
   gdrive_webhook_secret: "expa-sec-token-2026",
+  gdrive_folder_id: "",
   flaz_model: "qwen3.8-flash"
 };
 
@@ -972,7 +973,8 @@ const server = http.createServer(async (req, res) => {
                 upload_to_gdrive: wantGdrive,
                 gdrive_method: "Apps Script Webhook (Direct & Stable)",
                 gdrive_webhook_url: config.gdrive_webhook_url || "",
-                gdrive_webhook_secret: secret
+                gdrive_webhook_secret: secret,
+                gdrive_folder_id: config.gdrive_folder_id || ""
               }
             }
           };
@@ -1060,7 +1062,7 @@ const server = http.createServer(async (req, res) => {
             return `"${s}"`;
           };
 
-          const headers = ["No", "EXPA ID", "Nama Lengkap", "Nomor WhatsApp", "Program", "Komite Lokal (LC)", "Status", "Pesan Draf", "Link WhatsApp", "Waktu"];
+          const headers = ["No", "EXPA ID", "Nama Lengkap", "Nomor WhatsApp", "Nomor Masked", "Programme", "LC (Komite Lokal)", "Status", "Isi Pesan WhatsApp", "Link Kirim WhatsApp", "Waktu Update"];
           const lines = [headers.join(',')];
 
           rows.forEach((r, idx) => {
@@ -1071,6 +1073,7 @@ const server = http.createServer(async (req, res) => {
               clean(r.expa_id),
               clean(r.full_name),
               clean(r.phone_e164),
+              clean(r.phone_masked),
               clean(r.programme),
               clean(r.lc),
               clean(r.status),
@@ -1096,7 +1099,8 @@ const server = http.createServer(async (req, res) => {
                   auth_token: secret,
                   file_name: fileName,
                   mime_type: 'text/csv',
-                  base64_data: fileContentBase64
+                  base64_data: fileContentBase64,
+                  folder_id: config.gdrive_folder_id || ""
                 })
               });
               const gdriveData = await gdriveResp.json().catch(() => null);

@@ -716,7 +716,7 @@ const nodes = [
             type: "str",
             required: false,
             show: true,
-            advanced: true,
+            advanced: false,
             name: "telegram_chat_id",
             display_name: "Telegram chat id",
             value: ""
@@ -737,6 +737,15 @@ const nodes = [
             name: "dry_run",
             display_name: "Dry run (do not send)",
             info: "ON for demos and tests.",
+            value: false
+          },
+          always_notify: {
+            type: "bool",
+            required: false,
+            show: true,
+            name: "always_notify",
+            display_name: "Always send summary (even when OK)",
+            info: "Send a Telegram alert on every run completion.",
             value: true
           },
           fallback_threshold_pct: {
@@ -875,10 +884,11 @@ const nodes = [
             show: true,
             password: true,
             advanced: true,
+            load_from_db: false,
             name: "gdrive_webhook_secret",
             display_name: "Google Drive Webhook Secret",
-            value: "expa-sec-token-2026",
-            info: "Secret token untuk autentikasi ke Google Apps Script Webhook (SHARED_SECRET)."
+            value: "",
+            info: "Secret token untuk autentikasi ke Google Apps Script Webhook (SHARED_SECRET). Kosongkan untuk menggunakan default (expa-sec-token-2026)."
           },
           gdrive_folder_id: {
             type: "str",
@@ -898,7 +908,7 @@ const nodes = [
             advanced: true,
             name: "composio_api_key",
             display_name: "Composio API Key (if using Composio)",
-            value: "COMPOSIO_API_KEY",
+            value: "",
             info: "Your Composio API Key (sk-comp-...). Falls back to COMPOSIO_API_KEY environment variable."
           },
           composio_user_id: {

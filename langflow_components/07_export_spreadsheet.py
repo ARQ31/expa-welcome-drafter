@@ -5,6 +5,7 @@ Can operate as:
 2. Agentic Tool (toolmode): exposes `build_tool()` returning a LangChain Tool that an
    AI Agent can dynamically invoke to export & upload drafts.
 """
+from __future__ import annotations
 import csv
 from datetime import datetime, timezone
 import json
@@ -13,7 +14,7 @@ import re
 import sqlite3
 import urllib.parse
 import urllib.request
-from typing import Any
+from typing import Any, Optional
 
 from langchain_core.tools import Tool
 from langflow.custom import Component
@@ -29,15 +30,19 @@ def _now():
 def _resolve_path(p, default_name):
     if not p:
         p = default_name
+    if os.path.exists(p):
+        return os.path.abspath(p)
     base = os.environ.get("EXPA_WORKSPACE_DIR") or os.getcwd()
     candidates = [
         p,
         os.path.join(base, p.lstrip("./\\")),
         os.path.join(base, "data", os.path.basename(p)),
+        os.path.join(r"C:\Users\ariqm\Downloads\Application IID\expa-welcome-drafter", p.lstrip("./\\")),
+        os.path.join(r"C:\Users\ariqm\Downloads\Application IID\expa-welcome-drafter", "data", os.path.basename(p)),
     ]
     for c in candidates:
         if os.path.exists(c):
-            return c
+            return os.path.abspath(c)
     return p
 
 
@@ -88,8 +93,9 @@ class ExportSpreadsheetTool(Component):
         SecretStrInput(
             name="gdrive_webhook_secret",
             display_name="Google Drive Webhook Secret",
-            value="expa-sec-token-2026",
-            info="Secret token untuk autentikasi ke Google Apps Script Webhook (SHARED_SECRET).",
+            value="",
+            load_from_db=False,
+            info="Secret token untuk autentikasi ke Google Apps Script Webhook (SHARED_SECRET). Kosongkan untuk menggunakan default: expa-sec-token-2026.",
             advanced=True,
             required=False,
         ),
@@ -103,8 +109,8 @@ class ExportSpreadsheetTool(Component):
         SecretStrInput(
             name="composio_api_key",
             display_name="Composio API Key (if using Composio)",
-            value="COMPOSIO_API_KEY",
-            info="Your Composio API Key jika menggunakan metode Composio.",
+            value="",
+            info="Your Composio API Key jika menggunakan metode Composio. Kosongkan untuk membaca dari env COMPOSIO_API_KEY.",
             advanced=True,
             required=False,
         ),
@@ -224,11 +230,11 @@ class ExportSpreadsheetTool(Component):
         conn.row_factory = sqlite3.Row
         try:
             if filter_status == "all":
-                query = "SELECT * FROM contacts ORDER BY created_at DESC"
+                query = "SELECT *, COALESCE(NULLIF(full_name, ''), first_name) AS full_name_res FROM contacts ORDER BY created_at DESC"
                 rows = conn.execute(query).fetchall()
             elif filter_status == "draft_ready":
                 query = (
-                    "SELECT * FROM contacts WHERE status = ?"
+                    "SELECT *, COALESCE(NULLIF(full_name, ''), first_name) AS full_name_res FROM contacts WHERE status = ?"
                     " AND COALESCE(first_name, full_name, '') != ''"
                     " AND COALESCE(programme, '') != ''"
                     " AND COALESCE(phone_e164, '') != ''"
@@ -236,7 +242,7 @@ class ExportSpreadsheetTool(Component):
                 )
                 rows = conn.execute(query, (filter_status,)).fetchall()
             else:
-                query = "SELECT * FROM contacts WHERE status = ? ORDER BY created_at DESC"
+                query = "SELECT *, COALESCE(NULLIF(full_name, ''), first_name) AS full_name_res FROM contacts WHERE status = ? ORDER BY created_at DESC"
                 rows = conn.execute(query, (filter_status,)).fetchall()
             return [dict(r) for r in rows], None
         finally:
@@ -274,7 +280,9 @@ class ExportSpreadsheetTool(Component):
             elif hasattr(raw_secret, "value"):
                 secret = str(raw_secret.value).strip()
             else:
-                secret = str(raw_secret or "expa-sec-token-2026").strip()
+                secret = str(raw_secret or "").strip()
+            if not secret:
+                secret = os.environ.get("GDRIVE_WEBHOOK_SECRET", "expa-sec-token-2026").strip() or "expa-sec-token-2026"
 
             payload = {
                 "auth_token": secret,
@@ -561,7 +569,6 @@ class ExportSpreadsheetTool(Component):
             "Programme",
             "LC (Komite Lokal)",
             "Status",
-            "Sumber Draft",
             "Isi Pesan WhatsApp",
             "Link Kirim WhatsApp",
             "Waktu Update",
@@ -573,7 +580,12 @@ class ExportSpreadsheetTool(Component):
             raw_draft = str(r.get("draft_text") or "")
             draft_text = _sanitize_cell(raw_draft)
             wa_link = f"https://wa.me/{phone_raw}?text={urllib.parse.quote(raw_draft)}" if phone_raw else ""
-            display_name = r.get("full_name") or r.get("first_name") or ""
+
+            # Ambil murni dari database contacts yang sudah divalidasi dan dinormalisasi
+            db_full = str(r.get("full_name_res") or r.get("full_name") or "").strip()
+            db_first = str(r.get("first_name") or "").strip()
+            display_name = db_full or db_first
+
             data_rows.append([
                 idx,
                 _sanitize_cell(r.get("expa_id") or ""),
@@ -583,7 +595,6 @@ class ExportSpreadsheetTool(Component):
                 _sanitize_cell(r.get("programme") or ""),
                 _sanitize_cell(r.get("lc") or ""),
                 _sanitize_cell(r.get("status") or ""),
-                _sanitize_cell(r.get("draft_source") or ""),
                 draft_text,
                 wa_link,
                 _sanitize_cell(r.get("updated_at") or r.get("created_at") or ""),
@@ -612,7 +623,7 @@ class ExportSpreadsheetTool(Component):
 
                 for col in ws.columns:
                     col_letter = col[0].column_letter
-                    if col_letter == "J":  # WhatsApp message column
+                    if col_letter == "I":  # WhatsApp message column
                         ws.column_dimensions[col_letter].width = 50
                         for cell in col[1:]:
                             cell.alignment = Alignment(wrap_text=True, vertical="top")

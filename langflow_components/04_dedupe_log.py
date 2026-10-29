@@ -209,6 +209,8 @@ class DedupeAndLog(Component):
                     why = "same_expa_id" if row["contact_key"] == key else f"same_phone_as:{row['contact_key']}"
                     stats["duplicate"] += 1
                     _event(conn, run_id, "dedupe", "info", "skipped_duplicate", why, key)
+                    if row["contact_key"] == key and rec.get("full_name"):
+                        conn.execute("UPDATE contacts SET full_name=COALESCE(NULLIF(full_name, ''), ?) WHERE contact_key=?", (rec["full_name"], key))
                 conn.commit()
 
             # contacts that already used all attempts need a human
