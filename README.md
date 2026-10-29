@@ -65,6 +65,8 @@ From the Web Dashboard you can:
    - Click **Unduh CSV**: the `ExportSpreadsheetTool` component in Langflow exports all valid `draft_ready` records to a clean CSV (`expa_drafts_draft_ready_*.csv`) and uploads a backup copy to Google Drive (when the Apps Script Webhook URL is configured in Settings).
    - Click **Buka WhatsApp** on any applicant card to open `wa.me` with the pre-filled message, then click **Tandai Dihubungi** to mark the lead as contacted.
 
+## For Demo Video Check through this link [https://drive.google.com/drive/folders/1V38hptm-5cjyIVNQ8ZLgknnv6FpyvwUx]
+
 ## Build it in Langflow
 
 ### Option A: 1-Click Flow Import (Recommended)
